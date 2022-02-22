@@ -1,0 +1,74 @@
+Create database StudentDetailsDB;
+GO
+
+CREATE table Students(
+    StudentId int IDENTITY(1, 1) PRIMARY KEY NOT NULL,
+    StudentName NVARCHAR(100) NOT NULL,
+    Standard NVARCHAR(50) NOT NULL,
+    DateOfBirth DATETIME,
+    Gender NVARCHAR(10) NOT NULL,
+    MobileNumber bigint not NULL,
+    Address NVARCHAR(200) NOT NULL
+);
+GO
+
+CREATE procedure dbo.Db_SP_SaveStudentDetails
+(
+	@StudentName NVARCHAR(100),
+	@Standard NVARCHAR(50),
+	@DateOfBirth DATETIME,
+   	@Gender NVARCHAR(10),
+	@MobileNumber bigint,
+    	@Address NVARCHAR(200)
+)
+AS
+BEGIN
+SET NOCOUNT ON;
+INSERT INTO dbo.Students
+	(
+    StudentName,
+    Standard,
+    DateOfBirth,
+    Gender,
+    MobileNumber,
+    Address
+	) 
+	VALUES
+    (
+        @StudentName,
+        @Standard,
+        @DateOfBirth,
+        @Gender,
+        @MobileNumber,
+        @Address
+    )
+    SELECT CAST(SCOPE_IDENTITY() AS INT)
+END
+GO
+
+CREATE PROCEDURE dbo.Db_SP_UpdateStudentDetails
+(
+	@StudentId INT,
+	@StudentName NVARCHAR(100),
+	@Standard NVARCHAR(50),
+	@DateOfBirth DATETIME,
+   	@Gender NVARCHAR(10),
+	@MobileNumber bigint,
+    	@Address NVARCHAR(200)
+)
+AS
+BEGIN
+SET NOCOUNT ON;
+	IF EXISTS (SELECT 1 FROM dbo.Students WHERE StudentId = @StudentId)
+	BEGIN 
+		UPDATE dbo.Students SET
+		StudentName = @StudentName,
+		Standard = @Standard, 
+		DateOfBirth = @DateOfBirth,
+		Gender = @Gender,
+		MobileNumber = @MobileNumber,
+		Address = @Address 
+	WHERE StudentId = @StudentId
+	END
+END
+GO
